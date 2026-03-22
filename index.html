@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planet Destroyer - Cosmic Annihilation</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Top Bar -->
+        <header id="top-bar">
+            <div class="top-section">
+                <div class="game-title">
+                    <span class="title-icon">💥</span>
+                    <span>PLANET DESTROYER</span>
+                </div>
+                <div class="stats-bar">
+                    <div class="stat" id="stat-level">
+                        <span class="stat-label">LEVEL</span>
+                        <span class="stat-value" id="level-value">1</span>
+                    </div>
+                    <div class="stat" id="stat-score">
+                        <span class="stat-label">SCORE</span>
+                        <span class="stat-value" id="score-value">0</span>
+                    </div>
+                    <div class="stat" id="stat-credits">
+                        <span class="stat-label">CREDITS</span>
+                        <span class="stat-value" id="credits-value">500</span>
+                    </div>
+                    <div class="stat" id="stat-xp">
+                        <span class="stat-label">XP</span>
+                        <div class="xp-bar-container">
+                            <div class="xp-bar" id="xp-bar"></div>
+                            <span class="xp-text" id="xp-text">0 / 100</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="top-actions">
+                    <button class="btn-icon" id="btn-admin" title="Admin Panel (Ctrl+Shift+A)">⚙️</button>
+                    <button class="btn-icon" id="btn-sound" title="Sound">🔊</button>
+                    <button class="btn-icon" id="btn-fullscreen" title="Fullscreen">⛶</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Game Area -->
+        <div id="main-area">
+            <!-- Left Sidebar - Weapons -->
+            <aside id="weapon-panel">
+                <div class="panel-header">
+                    <h3>ARSENAL</h3>
+                </div>
+                <div class="category-tabs">
+                    <button class="cat-tab active" data-category="destroyer">🔥 Zerstörer</button>
+                    <button class="cat-tab" data-category="protector">🛡️ Beschützer</button>
+                    <button class="cat-tab" data-category="healer">💚 Heiler</button>
+                    <button class="cat-tab" data-category="auto">⚡ Auto</button>
+                </div>
+                <div class="weapon-list" id="weapon-list">
+                    <!-- Weapons populated by JS -->
+                </div>
+            </aside>
+
+            <!-- Game Canvas -->
+            <div id="canvas-wrapper">
+                <canvas id="game-canvas"></canvas>
+                <div id="damage-numbers"></div>
+                <div id="game-overlay" class="hidden">
+                    <div class="overlay-content">
+                        <h2 id="overlay-title">Planet Destroyed!</h2>
+                        <p id="overlay-text">You earned 500 credits</p>
+                        <button class="btn-primary" id="overlay-btn">Next Planet</button>
+                    </div>
+                </div>
+                <div id="rocket-controls" class="hidden">
+                    <div class="control-hint">WASD = Steuern | SPACE = Feuern | ESC = Zurück</div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar - Planet Info -->
+            <aside id="planet-panel">
+                <div class="panel-header">
+                    <h3>PLANET</h3>
+                </div>
+                <div id="planet-info">
+                    <div class="planet-preview" id="planet-preview"></div>
+                    <h4 id="planet-name">Terra Nova</h4>
+                    <p class="planet-desc" id="planet-desc">Ein erdähnlicher Planet voller Leben</p>
+                    <div class="planet-stats">
+                        <div class="hp-section">
+                            <div class="hp-label">
+                                <span>HP</span>
+                                <span id="hp-text">1000 / 1000</span>
+                            </div>
+                            <div class="hp-bar-container">
+                                <div class="hp-bar" id="hp-bar"></div>
+                            </div>
+                        </div>
+                        <div class="planet-detail">
+                            <span>Bevölkerung</span>
+                            <span id="planet-pop">8.2 Mrd.</span>
+                        </div>
+                        <div class="planet-detail">
+                            <span>Größe</span>
+                            <span id="planet-size">Mittel</span>
+                        </div>
+                        <div class="planet-detail">
+                            <span>Typ</span>
+                            <span id="planet-type">Terrestrisch</span>
+                        </div>
+                        <div class="planet-detail">
+                            <span>Verteidigung</span>
+                            <span id="planet-defense">Keine</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="planet-select-section">
+                    <h4>Level Planeten</h4>
+                    <div id="planet-select-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Bottom Bar -->
+        <footer id="bottom-bar">
+            <div class="selected-weapon-info">
+                <div class="weapon-icon-large" id="selected-weapon-icon">🔴</div>
+                <div class="weapon-details">
+                    <span class="weapon-name" id="selected-weapon-name">Laser Beam</span>
+                    <span class="weapon-stat" id="selected-weapon-stat">DPS: 10</span>
+                </div>
+            </div>
+            <div class="bottom-controls">
+                <div class="autoclicker-section">
+                    <label class="toggle-label">
+                        <span>Autoclicker</span>
+                        <input type="checkbox" id="autoclicker-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <div class="autoclicker-speed">
+                        <label>Speed:</label>
+                        <input type="range" id="autoclicker-speed" min="1" max="50" value="5">
+                        <span id="autoclicker-speed-val">5/s</span>
+                    </div>
+                </div>
+                <div class="bottom-actions">
+                    <button class="btn-secondary" id="btn-reset-planet">🔄 Planet Reset</button>
+                    <button class="btn-secondary" id="btn-next-planet">➡️ Nächster Planet</button>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Admin Panel Overlay -->
+        <div id="admin-overlay" class="hidden">
+            <div id="admin-panel">
+                <div class="admin-header">
+                    <h2>🔧 ADMIN PANEL</h2>
+                    <button class="btn-close" id="admin-close">✕</button>
+                </div>
+                <div class="admin-content">
+                    <div class="admin-section">
+                        <h3>💰 Ressourcen</h3>
+                        <div class="admin-row">
+                            <button class="admin-btn" data-action="credits-1k">+1.000 Credits</button>
+                            <button class="admin-btn" data-action="credits-10k">+10.000 Credits</button>
+                            <button class="admin-btn" data-action="credits-100k">+100.000 Credits</button>
+                            <button class="admin-btn" data-action="credits-1m">+1.000.000 Credits</button>
+                        </div>
+                        <div class="admin-row">
+                            <button class="admin-btn" data-action="xp-100">+100 XP</button>
+                            <button class="admin-btn" data-action="xp-1000">+1.000 XP</button>
+                            <button class="admin-btn" data-action="xp-10000">+10.000 XP</button>
+                        </div>
+                    </div>
+                    <div class="admin-section">
+                        <h3>🔓 Freischaltungen</h3>
+                        <div class="admin-row">
+                            <button class="admin-btn" data-action="unlock-weapons">Alle Waffen freischalten</button>
+                            <button class="admin-btn" data-action="unlock-planets">Alle Planeten freischalten</button>
+                            <button class="admin-btn" data-action="unlock-all">ALLES freischalten</button>
+                        </div>
+                    </div>
+                    <div class="admin-section">
+                        <h3>⚔️ Kampf-Hacks</h3>
+                        <div class="admin-row">
+                            <label class="admin-toggle">
+                                <input type="checkbox" data-hack="one-hit">
+                                <span>One-Hit Destroy</span>
+                            </label>
+                            <label class="admin-toggle">
+                                <input type="checkbox" data-hack="god-mode">
+                                <span>God Mode (Planet unzerstörbar)</span>
+                            </label>
+                            <label class="admin-toggle">
+                                <input type="checkbox" data-hack="infinite-ammo">
+                                <span>Unendlich Munition</span>
+                            </label>
+                            <label class="admin-toggle">
+                                <input type="checkbox" data-hack="no-cooldown">
+                                <span>Keine Abklingzeit</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="admin-section">
+                        <h3>📊 Multiplikatoren</h3>
+                        <div class="admin-row">
+                            <label>Schaden: <span id="dmg-mult-val">1x</span></label>
+                            <input type="range" id="dmg-multiplier" min="1" max="1000" value="1">
+                        </div>
+                        <div class="admin-row">
+                            <label>Geschwindigkeit: <span id="speed-mult-val">1x</span></label>
+                            <input type="range" id="speed-multiplier" min="1" max="20" value="1">
+                        </div>
+                        <div class="admin-row">
+                            <label>Heilung: <span id="heal-mult-val">1x</span></label>
+                            <input type="range" id="heal-multiplier" min="1" max="100" value="1">
+                        </div>
+                    </div>
+                    <div class="admin-section">
+                        <h3>🎮 Spielsteuerung</h3>
+                        <div class="admin-row">
+                            <button class="admin-btn" data-action="max-level">Max Level</button>
+                            <button class="admin-btn" data-action="reset-progress">Progress Reset</button>
+                            <button class="admin-btn" data-action="destroy-instant">Planet sofort zerstören</button>
+                            <button class="admin-btn" data-action="heal-full">Planet voll heilen</button>
+                        </div>
+                        <div class="admin-row">
+                            <label class="admin-toggle">
+                                <input type="checkbox" data-hack="debug-mode">
+                                <span>Debug Modus (FPS, Hitboxen)</span>
+                            </label>
+                            <label class="admin-toggle">
+                                <input type="checkbox" data-hack="auto-destroy">
+                                <span>Auto-Destroy (automatisch zerstören)</span>
+                            </label>
+                            <label class="admin-toggle">
+                                <input type="checkbox" data-hack="mega-explosions">
+                                <span>Mega Explosionen</span>
+                            </label>
+                            <label class="admin-toggle">
+                                <input type="checkbox" data-hack="rainbow-mode">
+                                <span>Rainbow Modus</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="admin-section">
+                        <h3>🌍 Planet Spawner</h3>
+                        <div class="admin-row">
+                            <select id="spawn-planet-select">
+                                <option value="">Planet wählen...</option>
+                            </select>
+                            <button class="admin-btn" data-action="spawn-planet">Planet spawnen</button>
+                            <button class="admin-btn" data-action="random-planet">Zufälliger Planet</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Level Complete Overlay -->
+        <div id="level-complete-overlay" class="hidden">
+            <div class="level-complete-content">
+                <h1 id="lc-title">🎉 LEVEL COMPLETE!</h1>
+                <div class="lc-stats">
+                    <div class="lc-stat">
+                        <span class="lc-label">Credits verdient</span>
+                        <span class="lc-value" id="lc-credits">+500</span>
+                    </div>
+                    <div class="lc-stat">
+                        <span class="lc-label">XP verdient</span>
+                        <span class="lc-value" id="lc-xp">+100</span>
+                    </div>
+                    <div class="lc-stat">
+                        <span class="lc-label">Planeten zerstört</span>
+                        <span class="lc-value" id="lc-destroyed">1</span>
+                    </div>
+                </div>
+                <div class="lc-unlocks" id="lc-unlocks"></div>
+                <button class="btn-primary btn-large" id="lc-continue">Weiter zum nächsten Level ➡️</button>
+            </div>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="start-screen">
+            <div class="start-content">
+                <h1 class="start-title">PLANET<br>DESTROYER</h1>
+                <p class="start-subtitle">Zerstöre Planeten. Beherrsche das Universum.</p>
+                <button class="btn-primary btn-large pulse" id="btn-start">🚀 SPIEL STARTEN</button>
+                <p class="start-hint">Drücke Ctrl+Shift+A für das Admin Panel</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
