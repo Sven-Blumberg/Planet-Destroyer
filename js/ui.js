@@ -152,12 +152,12 @@ PD.UI = (function() {
     function setupCanvasListeners() {
         const canvas = document.getElementById('game-canvas');
 
-        canvas.addEventListener('mousedown', (e) => {
+        function handlePointerDown(clientX, clientY) {
             const state = PD.Game.getState();
             state.mouseDown = true;
             const rect = canvas.getBoundingClientRect();
-            state.mouseX = e.clientX - rect.left;
-            state.mouseY = e.clientY - rect.top;
+            state.mouseX = clientX - rect.left;
+            state.mouseY = clientY - rect.top;
 
             if (state.selectedWeapon && !state.rocketActive) {
                 const w = state.selectedWeapon;
@@ -165,22 +165,54 @@ PD.UI = (function() {
                     PD.Game.fireWeapon(w, state.mouseX, state.mouseY);
                 }
             }
+        }
+
+        function handlePointerMove(clientX, clientY) {
+            const state = PD.Game.getState();
+            const rect = canvas.getBoundingClientRect();
+            state.mouseX = clientX - rect.left;
+            state.mouseY = clientY - rect.top;
+        }
+
+        function handlePointerUp() {
+            PD.Game.getState().mouseDown = false;
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            handlePointerDown(e.clientX, e.clientY);
         });
 
         canvas.addEventListener('mousemove', (e) => {
-            const state = PD.Game.getState();
-            const rect = canvas.getBoundingClientRect();
-            state.mouseX = e.clientX - rect.left;
-            state.mouseY = e.clientY - rect.top;
+            handlePointerMove(e.clientX, e.clientY);
         });
 
-        canvas.addEventListener('mouseup', () => {
-            PD.Game.getState().mouseDown = false;
-        });
+        canvas.addEventListener('mouseup', handlePointerUp);
+        canvas.addEventListener('mouseleave', handlePointerUp);
 
-        canvas.addEventListener('mouseleave', () => {
-            PD.Game.getState().mouseDown = false;
-        });
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            PD.Audio.resume();
+            const touch = e.touches[0];
+            handlePointerDown(touch.clientX, touch.clientY);
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            handlePointerMove(touch.clientX, touch.clientY);
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            handlePointerUp();
+        }, { passive: false });
+
+        canvas.addEventListener('touchcancel', (e) => {
+            e.preventDefault();
+            handlePointerUp();
+        }, { passive: false });
+
+        canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     }
 
     function setupKeyboardListeners() {

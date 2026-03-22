@@ -16,6 +16,14 @@
         PD.UI.updatePlanetInfo();
         PD.UI.updateSelectedWeaponInfo();
         document.addEventListener('click', () => PD.Audio.resume(), { once: true });
+        document.addEventListener('touchstart', () => PD.Audio.resume(), { once: true });
+
+        document.addEventListener('gesturestart', (e) => e.preventDefault());
+        document.addEventListener('gesturechange', (e) => e.preventDefault());
+        document.addEventListener('gestureend', (e) => e.preventDefault());
+
+        document.addEventListener('dblclick', (e) => e.preventDefault());
+
         requestAnimationFrame(gameLoop);
     }
 
